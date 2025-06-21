@@ -35,6 +35,9 @@ public class UserServlet extends HttpServlet {
 
         List<User> users = userService.getAllUsers();
         req.setAttribute("users", users);
+        req.getRequestDispatcher("/admin/manage-houses.jsp").forward(req, resp);
+
+        req.setAttribute("users", users);
         req.getRequestDispatcher("/main.jsp").forward(req, resp);
     }
 

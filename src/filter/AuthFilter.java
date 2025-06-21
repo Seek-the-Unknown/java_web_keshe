@@ -1,5 +1,7 @@
 package filter;
 
+import model.User;
+
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +32,7 @@ public class AuthFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // 初始化代码，如果需要
-        System.out.println("AuthFilter 初始化完毕。");
+        System.out.println("AuthFilter 初始化完毕.");
     }
 
     @Override
@@ -47,6 +49,22 @@ public class AuthFilter implements Filter {
 
         String path = request.getRequestURI().substring(request.getContextPath().length());
 
+        if (path.startsWith("/admin/")) {
+//            HttpSession session = request.getSession(false);
+            // 检查是否登录，并且用户名是否是'admin'
+            if (session == null || session.getAttribute("currentUser") == null) {
+                // 未登录，直接重定向到登录页
+                response.sendRedirect(request.getContextPath() + "/index.jsp?error=adminRequired");
+                return; // 必须 return，中断后续执行
+            } else {
+                User user = (User) session.getAttribute("currentUser");
+                if (!"admin".equals(user.getUsername())) {
+                    // 已登录但不是admin用户，显示禁止访问
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "您没有权限访问此页面。");
+                    return; // 必须 return
+                }
+            }
+        }
         // 2. 权限校验
         boolean isLoggedIn = (session != null && session.getAttribute("currentUser") != null);
 
@@ -66,6 +84,7 @@ public class AuthFilter implements Filter {
             // 对于未登录用户访问受限资源，通常重定向到登录页
             response.sendRedirect(request.getContextPath() + "/index.jsp");
         }
+
     }
 
     @Override

@@ -23,7 +23,7 @@ public class autoLoginFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         // 在实际项目中，UserService 实例可能通过依赖注入获取
         this.userService = new UserServiceImp();
-        System.out.println("AutoLoginFilter 初始化完毕。");
+        System.out.println("AutoLoginFilter 初始化完毕.");
     }
 
     @Override
