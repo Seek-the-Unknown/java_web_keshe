@@ -63,6 +63,22 @@
             gap: 1.5rem;
         }
 
+        /* --- 在 <style> 内添加这段代码 --- */
+
+        .house-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+
+            /* 关键：将卡片内部设置为Flex布局，方向为垂直 */
+            display: flex;
+            flex-direction: column;
+
+            /* 关键：为卡片内的绝对定位元素(如状态标签)提供定位参考 */
+            position: relative;
+        }
 
         .nav-left, .nav-right {
             display: flex;
@@ -364,6 +380,7 @@
         <div class="house-grid">
             <c:forEach var="house" items="${houseList}">
                 <div class="house-card">
+
                     <c:if test="${house.rented}"><span class="card-status status-rented">已租</span></c:if>
                     <c:if test="${not house.rented}"><span class="card-status status-available">可租</span></c:if>
                     <div class="card-image-wrapper">
