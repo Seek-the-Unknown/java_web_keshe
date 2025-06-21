@@ -259,4 +259,10 @@ public class House {
     public void setRented(boolean rented) {
         isRented = rented;
     }
+
+    public void setPostDate(java.sql.Timestamp timestamp) {
+        if (timestamp != null) {
+            this.postDate = timestamp.toLocalDateTime();
+        }
+    }
 }

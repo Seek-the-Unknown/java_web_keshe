@@ -37,6 +37,7 @@ public class RentalServlet extends HttpServlet {
             Rental rental = new Rental();
             rental.setHouseId(houseId);
             rental.setUsername(currentUser.getUsername());
+            rental.setRentalDate(new java.util.Date());
             rentalDAO.addRental(rental);
 
             // 4. 更新房源状态为“已租”
@@ -44,7 +45,7 @@ public class RentalServlet extends HttpServlet {
 
             // 5. 重定向到成功页面或用户个人中心
             // 这里我们先简单地重定向回首页，并带上成功提示
-            response.sendRedirect(request.getContextPath() + "/rental/index.jsp?rent=success");
+            response.sendRedirect(request.getContextPath() + "/?rent=success");
 
         } catch (NumberFormatException e) {
             response.sendRedirect(request.getContextPath() + "/rental/index.jsp?error=invalidHouseId");

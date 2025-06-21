@@ -6,6 +6,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -56,12 +57,56 @@ public class HouseDAOImpl implements HouseDAO {
      * 方法已从 findAllHouses 重命名为 getAllHouses。
      * @return 包含所有房源的List集合
      */
+//    @Override
+//    public List<House> getAllHouses() {
+//        String sql = "SELECT * FROM houses ORDER BY post_date DESC";
+//        try {
+//            // BeanListHandler 会自动将列名（如 post_date）映射到驼峰命名的属性（postDate）
+//            return queryRunner.query(sql, new BeanListHandler<>(House.class));
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return Collections.emptyList();
+//        }
+//    }
     @Override
     public List<House> getAllHouses() {
-        String sql = "SELECT * FROM houses ORDER BY post_date DESC";
+        // SQL语句现在直接使用数据库的原始列名
+        String sql = "SELECT id, title, houseType, price, bedrooms, bathrooms, area, city, address, description, imagePaths, username, post_date, is_rented FROM houses ORDER BY post_date DESC";
+
         try {
-            // BeanListHandler 会自动将列名（如 post_date）映射到驼峰命名的属性（postDate）
-            return queryRunner.query(sql, new BeanListHandler<>(House.class));
+            // 使用一个匿名的 AbstractListHandler 来手动处理每一行结果
+            return queryRunner.query(sql, new org.apache.commons.dbutils.handlers.AbstractListHandler<House>() {
+                @Override
+                protected House handleRow(ResultSet rs) throws SQLException {
+                    // 为每一行数据创建一个新的 House 对象
+                    House house = new House();
+
+                    // 手动将每一列的值赋给 house 对象的属性
+                    house.setId(rs.getInt("id"));
+                    house.setTitle(rs.getString("title"));
+                    house.setHouseType(rs.getString("houseType"));
+                    house.setPrice(rs.getDouble("price"));
+                    house.setBedrooms(rs.getInt("bedrooms"));
+                    house.setBathrooms(rs.getInt("bathrooms"));
+                    house.setArea(rs.getDouble("area"));
+                    house.setCity(rs.getString("city"));
+                    house.setAddress(rs.getString("address"));
+                    house.setDescription(rs.getString("description"));
+                    house.setImagePaths(rs.getString("imagePaths"));
+                    house.setUsername(rs.getString("username"));
+
+                    // 【关键】手动处理 Timestamp 到 LocalDateTime 的转换
+                    java.sql.Timestamp ts = rs.getTimestamp("post_date");
+                    if (ts != null) {
+                        house.setPostDate(ts.toLocalDateTime());
+                    }
+
+                    // 【关键】手动处理布尔值的映射
+                    house.setRented(rs.getBoolean("is_rented"));
+
+                    return house;
+                }
+            });
         } catch (SQLException e) {
             e.printStackTrace();
             return Collections.emptyList();
